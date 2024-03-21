@@ -13,14 +13,9 @@
  */
 package com.github.spotbugs.snom.internal
 
-import com.android.build.gradle.AppExtension
-import com.android.build.gradle.BaseExtension
-import com.android.build.gradle.LibraryExtension
-import com.android.build.gradle.api.BaseVariant
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.github.spotbugs.snom.SpotBugsTask
 import org.gradle.api.Action
-import org.gradle.api.DomainObjectSet
-import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -53,21 +48,15 @@ internal class SpotBugsTaskFactory {
 
     private fun generateForAndroid(project: Project) {
         val action = Action<Plugin<*>> {
-            val variants: DomainObjectSet<out BaseVariant> =
-                when (val baseExtension = project.extensions.getByType(BaseExtension::class.java)) {
-                    is AppExtension -> baseExtension.applicationVariants
-                    is LibraryExtension -> baseExtension.libraryVariants
-                    else -> throw GradleException("Unrecognized Android extension $baseExtension")
-                }
-            variants.all { variant: BaseVariant ->
-                val spotbugsTaskName = toLowerCamelCase("spotbugs", variant.name)
-                log.debug("Creating SpotBugsTask for {}", variant.name)
-                project.tasks.register(spotbugsTaskName, SpotBugsTask::class.java) {
-                    val javaCompile = variant.javaCompileProvider.get()
-                    it.sourceDirs.setFrom(javaCompile.source)
-                    it.classDirs.setFrom(javaCompile.destinationDirectory)
-                    it.auxClassPaths.setFrom(javaCompile.classpath)
-                    it.dependsOn(javaCompile)
+            project.extensions.getByType(AndroidComponentsExtension::class.java).also { extension ->
+                extension.onVariants { variant ->
+                    val spotbugsTaskName = toLowerCamelCase("spotbugs", variant.flavorName)
+                    log.debug("Creating SpotBugsTask for {}", variant.flavorName)
+                    project.tasks.register(spotbugsTaskName, SpotBugsTask::class.java) {
+                        val javaCompile = variant.sources.java?.all?.orNull.orEmpty()
+                        it.sourceDirs.setFrom(javaCompile)
+                        it.dependsOn(javaCompile)
+                    }
                 }
             }
         }

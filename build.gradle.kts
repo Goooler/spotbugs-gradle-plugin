@@ -26,12 +26,12 @@ group = "com.github.spotbugs.snom"
 
 val spotBugsVersion = "4.8.3"
 val slf4jVersion = "2.0.0"
-val androidGradlePluginVersion = "8.3.1"
 
 dependencies {
     compileOnly(localGroovy())
     compileOnly("com.github.spotbugs:spotbugs:$spotBugsVersion")
-    compileOnly("com.android.tools.build:gradle:$androidGradlePluginVersion")
+    // This should only be updated when updating the minimum version supported by Spotbugs Gradle plugin.
+    compileOnly("com.android.tools.build:gradle-api:8.3.1")
     testImplementation("com.tngtech.archunit:archunit:1.2.1")
 }
 

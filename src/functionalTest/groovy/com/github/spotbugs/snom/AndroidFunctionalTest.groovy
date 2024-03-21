@@ -20,14 +20,13 @@ import spock.lang.Requires
 
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
-@Ignore
 class AndroidFunctionalTest extends BaseFunctionalTest {
 
     @Requires({env['ANDROID_SDK_ROOT']})
-    def "can generate spotbugsRelease depending on app variant compilation task with AGP 4.2.0"() {
+    def "can generate spotbugsRelease depending on app variant compilation task with AGP 8.3.1"() {
         given: "a Gradle project to build an Android app"
         GradleRunner runner = gradleRunner
-        writeAppBuildFile(runner, '4.2.0')
+        writeAppBuildFile(runner, '8.3.1')
         writeSourceFile()
         writeManifestFile()
 
@@ -39,10 +38,10 @@ class AndroidFunctionalTest extends BaseFunctionalTest {
     }
 
     @Requires({env['ANDROID_SDK_ROOT']})
-    def "can generate spotbugsRelease depending on library variant compilation task with AGP 4.2.0"() {
+    def "can generate spotbugsRelease depending on library variant compilation task with AGP 8.3.1"() {
         given: "a Gradle project to build an Android library"
         GradleRunner runner = gradleRunner
-        writeLibraryBuildFile(runner, '4.2.0')
+        writeLibraryBuildFile(runner, '8.3.1')
         writeSourceFile()
         writeManifestFile()
 
